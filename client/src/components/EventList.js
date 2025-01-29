@@ -1,29 +1,27 @@
 
 import React, { useState, useEffect } from 'react';
 
-const EstateList = () => {
-  const [estates, setEstates] = useState([]);
+const EventList = () => {
+  const [events, setEvents] = useState([]);
   const [communities, setCommunities] = useState([]);
-  const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
-    estatename: '',
-    user_id: '',
+    eventname: '',
+    eventdate: '',
     community_id: ''
   });
 
   useEffect(() => {
-    fetchEstates();
+    fetchEvents();
     fetchCommunities();
-    fetchUsers();
   }, []);
 
-  const fetchEstates = async () => {
+  const fetchEvents = async () => {
     try {
-      const response = await fetch('http://localhost:5000/estates');
+      const response = await fetch('http://localhost:5000/events');
       const data = await response.json();
-      setEstates(data);
+      setEvents(data);
     } catch (error) {
-      console.error('Error fetching estates:', error);
+      console.error('Error fetching events:', error);
     }
   };
 
@@ -37,20 +35,10 @@ const EstateList = () => {
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/users');
-      const data = await response.json();
-      setUsers(data);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/estates', {
+      const response = await fetch('http://localhost:5000/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,55 +46,49 @@ const EstateList = () => {
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        fetchEstates();
+        fetchEvents();
         setFormData({
-          estatename: '',
-          user_id: '',
+          eventname: '',
+          eventdate: '',
           community_id: ''
         });
       }
     } catch (error) {
-      console.error('Error creating estate:', error);
+      console.error('Error creating event:', error);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/estates/${id}`, {
+      const response = await fetch(`http://localhost:5000/events/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
-        fetchEstates();
+        fetchEvents();
       }
     } catch (error) {
-      console.error('Error deleting estate:', error);
+      console.error('Error deleting event:', error);
     }
   };
 
   return (
-    <div className="estate-list">
-      <h2>Estates</h2>
+    <div className="event-list">
+      <h2>Events</h2>
       
       <form onSubmit={handleSubmit} className="form">
         <input
           type="text"
-          placeholder="Estate Name"
-          value={formData.estatename}
-          onChange={(e) => setFormData({ ...formData, estatename: e.target.value })}
+          placeholder="Event Name"
+          value={formData.eventname}
+          onChange={(e) => setFormData({ ...formData, eventname: e.target.value })}
           required
         />
-        <select
-          value={formData.user_id}
-          onChange={(e) => setFormData({ ...formData, user_id: e.target.value })}
+        <input
+          type="datetime-local"
+          value={formData.eventdate}
+          onChange={(e) => setFormData({ ...formData, eventdate: e.target.value })}
           required
-        >
-          <option value="">Select Owner</option>
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.name}
-            </option>
-          ))}
-        </select>
+        />
         <select
           value={formData.community_id}
           onChange={(e) => setFormData({ ...formData, community_id: e.target.value })}
@@ -119,19 +101,19 @@ const EstateList = () => {
             </option>
           ))}
         </select>
-        <button type="submit">Add Estate</button>
+        <button type="submit">Add Event</button>
       </form>
 
       <div className="list">
-        {estates.map((estate) => (
-          <div key={estate.id} className="list-item">
+        {events.map((event) => (
+          <div key={event.id} className="list-item">
             <div className="item-details">
-              <h3>{estate.estatename}</h3>
-              <p>Owner ID: {estate.user_id}</p>
-              <p>Community ID: {estate.community_id}</p>
+              <h3>{event.eventname}</h3>
+              <p>Date: {new Date(event.eventdate).toLocaleString()}</p>
+              <p>Community ID: {event.community_id}</p>
             </div>
             <div className="item-actions">
-              <button onClick={() => handleDelete(estate.id)}>Delete</button>
+              <button onClick={() => handleDelete(event.id)}>Delete</button>
             </div>
           </div>
         ))}
@@ -140,4 +122,4 @@ const EstateList = () => {
   );
 };
 
-export default EstateList;
+export default EventList;

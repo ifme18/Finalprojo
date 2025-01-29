@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import EstateList from './EstateList';
 import CommunityList from './CommunityList';
-
-import EventList from './EvenList';
+import EventList from './EventList';
 
 import UserList from './UserList';
 
