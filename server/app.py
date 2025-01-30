@@ -37,6 +37,31 @@ def get_community(id):
         'name': community.name,
         'location': community.location
     })
+@app.route('/communities/<int:id>', methods=['DELETE'])
+def delete_community(id):
+    community = Community.query.get_or_404(id)
+    db.session.delete(community)
+    db.session.commit()
+    return jsonify({'message': 'Community deleted successfully'}), 200
+
+@app.route('/communities/<int:id>', methods=['PUT'])
+def update_community(id):
+    community = Community.query.get_or_404(id)
+    data = request.get_json()
+
+    if 'name' in data:
+        community.name = data['name']
+    if 'location' in data:
+        community.location = data['location']
+
+    db.session.commit()
+
+    return jsonify({
+        'id': community.id,
+        'name': community.name,
+        'location': community.location,
+        'message': 'Community updated successfully'
+    })
 
 @app.route('/communities', methods=['POST'])
 def create_community():
