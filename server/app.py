@@ -1,11 +1,24 @@
-from flask import request, jsonify
-from config import app, db
-from models import Community, User, Event, Estate, Notification
+from flask import Flask, request, jsonify
+from models import db, Community, User,Event, Estate,Notification
+from models import db, Community, User, Event, Estate, Notification
 from datetime import datetime
+from flask_migrate import Migrate
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+db.init_app(app)
+
+
+migrate = Migrate(app, db)
 
 @app.route('/')
 def index():
     return "Welcome to the Community API!"
+
 
 @app.route('/communities', methods=['GET'])
 def get_communities():
@@ -49,29 +62,6 @@ def create_community():
         'location': community.location
     }), 201
 
-@app.route('/communities/<int:id>', methods=['PUT'])
-def update_community(id):
-    community = Community.query.get_or_404(id)
-    data = request.get_json()
-
-    if 'name' in data:
-        community.name = data['name']
-    if 'location' in data:
-        community.location = data['location']
-
-    db.session.commit()
-    return jsonify({
-        'id': community.id,
-        'name': community.name,
-        'location': community.location
-    })
-
-@app.route('/communities/<int:id>', methods=['DELETE'])
-def delete_community(id):
-    community = Community.query.get_or_404(id)
-    db.session.delete(community)
-    db.session.commit()
-    return '', 204
 
 @app.route('/users', methods=['GET'])
 def get_users():
@@ -95,7 +85,7 @@ def get_user(id):
         'email': user.email,
         'occupation': user.occupation,
         'phoneno': user.phoneno,
-        'houseno': u.houseno,
+        'houseno': user.houseno,
         'community_id': user.community_id
     })
 
@@ -128,6 +118,7 @@ def create_user():
         'email': user.email,
         'community_id': user.community_id
     }), 201
+
 
 @app.route('/events', methods=['GET'])
 def get_events():
@@ -171,6 +162,7 @@ def create_event():
         'community_id': event.community_id
     }), 201
 
+
 @app.route('/estates', methods=['GET'])
 def get_estates():
     estates = Estate.query.all()
@@ -207,6 +199,7 @@ def create_estate():
         'user_id': estate.user_id,
         'community_id': estate.community_id
     }), 201
+
 
 @app.errorhandler(404)
 def not_found_error(error):
