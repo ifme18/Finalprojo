@@ -100,6 +100,12 @@ def get_users():
         'houseno': u.houseno,
         'community_id': u.community_id
     } for u in users])
+@app.route('/users/<int:id>', methods=['DELETE'])
+def delete_users(id):
+    users = User.query.get_or_404(id)
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': 'user deleted successfully'}), 200
 
 @app.route('/users/<int:id>', methods=['GET'])
 def get_user(id):
