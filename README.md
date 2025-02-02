@@ -1,6 +1,10 @@
 Find the deployed backend urls below https://new-server-directory.onrender.com
 below is the app site https://communityestateapp.netlify.app/
 
+Community Management API
+This is a Flask application designed for managing communities, users, events, estates, and notifications within a community system. Below are the details on how to set up, use, and contribute to this project.
+
+
 API Endpoints
 Communities
 GET /communities - Retrieve all communities
